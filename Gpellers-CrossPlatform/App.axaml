@@ -1,0 +1,24 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Gpellers.App"
+             RequestedThemeVariant="Light">
+    <!-- Стили приложения Gpellers (ASIS-2AX-V) Cross-Platform -->
+    <Application.Styles>
+        <FluentTheme />
+        <!-- Стиль для эмуляции WinForms GroupBox через HeaderedContentControl -->
+        <Style Selector="HeaderedContentControl">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border BorderBrush="#C0C0C0" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,4,0,4" Background="White">
+                        <StackPanel>
+                            <ContentPresenter Content="{TemplateBinding Header}"
+                                              FontWeight="SemiBold"
+                                              Margin="0,0,0,6"/>
+                            <ContentPresenter Content="{TemplateBinding Content}"/>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+    </Application.Styles>
+</Application>

@@ -50,21 +50,47 @@
 
 ---
 
-## 💻 Сборка и запуск программы (C# WinForms)
+## 💻 Сборка и запуск программы
 
-Проект разработан под **.NET 8.0 Windows**.
+### Кроссплатформенная версия (Avalonia UI, Windows & Linux)
+Рекомендуемая современная версия программы находится в папке `Gpellers-CrossPlatform/`.
+- Поддерживает Windows и Linux.
+- Адаптивное масштабирование Viewbox.
+- Выпадающие списки с ручным вводом и мгновенным откликом `EditableComboBox`.
+- Автономная сборка (включая скрипт `build-all.bat` в папке проекта).
 
-### Требования
-- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- Visual Studio 2022 / 2026 с поддержкой рабочей нагрузки *.NET Desktop Development*
+```bash
+cd Gpellers-CrossPlatform
+dotnet build Gpellers.csproj
+```
 
-### Сборка
+### Классическая версия WinForms (.NET 8 Windows)
 ```bash
 # Сборка решения
 dotnet build ASIS-2AX-V.sln
 
 # Публикация автономного релиза
 dotnet publish ASIS-2AX-V/ASIS-2AX-V.csproj -c Release
+```
+
+---
+
+## 📂 Структура репозитория
+
+```
+├── Gpellers-CrossPlatform/     # Кроссплатформенная версия на Avalonia UI (.NET 8, Windows & Linux)
+│   ├── MainWindow.axaml        # Главное окно с векторным масштабированием (Viewbox)
+│   ├── EditableComboBox.cs     # Выпадающие списки с ручным вводом и мгновенным откликом
+│   ├── AppVersion.cs           # Единый источник версий для всего проекта
+│   ├── build-all.bat           # Скрипт сборки автономных релизов (Single-File)
+│   └── Gpellers.csproj         # Проект Avalonia UI .NET 8
+├── ASIS-2AX-V/                 # Исходный код классического приложения (.NET 8 WinForms)
+│   ├── Form1.cs                # Основная логика работы и помпы
+│   └── ASIS-2AX-V.csproj       # Файл проекта WinForms
+├── PROJECT_CONTEXT.md          # Полное описание архитектуры и контекста проекта
+├── CHANGELOG.md                # Подробный лог изменений
+├── LICENSE.txt                 # Лицензия проекта (GPL-3.0)
+└── ASIS-2AX-V.sln              # Файл решения Visual Studio (содержит оба проекта)
 ```
 
 ---

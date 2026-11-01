@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Gpellers.AboutWindow"
+        Title="О программе"
+        Width="580" Height="220"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#FAFAFA">
+    <Grid Margin="20" ColumnDefinitions="Auto,*" RowDefinitions="*,Auto">
+        <!-- Логотип СПЕЦКИБЕРПРИБОР / Ультранк -->
+        <Image Grid.Row="0" Grid.Column="0" Source="avares://Gpellers/Assets/about_logo.png" Width="140" Height="120" Margin="0,0,20,0" VerticalAlignment="Center"/>
+
+        <!-- Текст описания -->
+        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Spacing="8">
+            <TextBlock Text="ASIS-2AX-V (Gpellers)" FontSize="18" FontWeight="Bold" Foreground="#1A237E"/>
+            <TextBlock x:Name="lblVersion" Text="Версия: 1.0.4 (Cross-Platform)" FontSize="13" Foreground="#616161"/>
+            <TextBlock Text="Разработано: ООО «Ультранк»&#x0a;по заказу ООО «СПЕЦКИБЕРПРИБОР»" FontSize="14" TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <!-- Кнопка закрытия -->
+        <Button Grid.Row="1" Grid.Column="1" Content="Понятно" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Height="40" Margin="0,15,0,0" Click="Close_Click"/>
+    </Grid>
+</Window>

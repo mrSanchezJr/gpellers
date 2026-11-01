@@ -1,0 +1,45 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Gpellers.NumpadWindow"
+        Title="Экранная клавиатура"
+        Width="240" Height="400"
+        CanResize="False"
+        Topmost="True"
+        ShowInTaskbar="False"
+        WindowStartupLocation="Manual"
+        Background="#F5F5F5">
+
+    <Grid Margin="10" RowDefinitions="Auto,*,*,*,*,*,*" ColumnDefinitions="*,*,*">
+        <!-- Индикатор активного поля ввода -->
+        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#E8F0FE" CornerRadius="4" Padding="6" Margin="0,0,0,8" BorderBrush="#BED5F6" BorderThickness="1">
+            <TextBlock x:Name="TargetIndicatorText" Text="Активное поле: нет" FontSize="11" Foreground="#1A73E8" TextAlignment="Center" FontWeight="SemiBold"/>
+        </Border>
+
+        <!-- Строка 1: Очистить, Backspace -->
+        <Button Grid.Row="1" Grid.Column="0" Content="C" Click="Clear_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FFEBEE" Foreground="#C62828" FontWeight="Bold"/>
+        <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Content="⌫ Стереть" Click="Backspace_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FFF3E0" Foreground="#E65100" FontWeight="Bold"/>
+
+        <!-- Строка 2: 7, 8, 9 -->
+        <Button Grid.Row="2" Grid.Column="0" Content="7" Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+        <Button Grid.Row="2" Grid.Column="1" Content="8" Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+        <Button Grid.Row="2" Grid.Column="2" Content="9" Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+
+        <!-- Строка 3: 4, 5, 6 -->
+        <Button Grid.Row="3" Grid.Column="0" Content="4" Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+        <Button Grid.Row="3" Grid.Column="1" Content="5" Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+        <Button Grid.Row="3" Grid.Column="2" Content="6" Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+
+        <!-- Строка 4: 1, 2, 3 -->
+        <Button Grid.Row="4" Grid.Column="0" Content="1" Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+        <Button Grid.Row="4" Grid.Column="1" Content="2" Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+        <Button Grid.Row="4" Grid.Column="2" Content="3" Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+
+        <!-- Строка 5: -, 0, . -->
+        <Button Grid.Row="5" Grid.Column="0" Content="-" Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+        <Button Grid.Row="5" Grid.Column="1" Content="0" Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+        <Button Grid.Row="5" Grid.Column="2" Content="." Click="Number_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold"/>
+
+        <!-- Строка 6: Ввод -->
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Content="⏎ Ввод (след. поле)" Click="Enter_Click" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#E8F5E9" Foreground="#2E7D32" FontWeight="Bold"/>
+    </Grid>
+</Window>

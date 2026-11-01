@@ -1,0 +1,512 @@
+<!--
+  =============================================================================
+  ASIS-2AX-V (GPELLER) - КРОССПЛАТФОРМЕННЫЙ ИНТЕРФЕЙС УПРАВЛЕНИЯ ЧПУ (WINDOWS / LINUX)
+  =============================================================================
+  АВТОМАТИЧЕСКАЯ АДАПТАЦИЯ И МАСШТАБИРОВАНИЕ (VIEWBOX):
+  Весь интерфейс помещен в контейнер <Viewbox Stretch="Uniform">.
+  Это позволяет пользователю просто тянуть за любой угол окна:
+  - При уменьшении окна весь интерфейс пропорционально уменьшается без сдвигов и наложений.
+  - При разворачивании на весь экран или увеличении окна интерфейс пропорционально увеличивается.
+  - Никаких ручных настроек масштаба или полос прокрутки — всё масштабируется на лету!
+  =============================================================================
+-->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Gpellers"
+        x:Class="Gpellers.MainWindow"
+        Title="ASIS-2AX-V"
+        Width="1440" Height="860"
+        MinWidth="64" MinHeight="40"
+        WindowStartupLocation="CenterScreen"
+        Icon="avares://Gpellers/Assets/icons8-jet-engine-100.ico"
+        Background="#F0F0F0">
+
+    <!-- ================= СТИЛИ ОФОРМЛЕНИЯ ================= -->
+    <Window.Styles>
+        <!-- Стиль карточки-группы (аналог GroupBox в WinForms) -->
+        <Style Selector="Border.groupCard">
+            <Setter Property="BorderBrush" Value="#B0B0B0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Background" Value="#FBFBFB"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Padding" Value="8"/>
+        </Style>
+
+        <!-- Стиль заголовка группы -->
+        <Style Selector="TextBlock.groupTitle">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <!-- Стиль больших квадратных кнопок премещения (перемещение осей) -->
+        <Style Selector="Button.jogBtn">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Background" Value="#EAEAEA"/>
+        </Style>
+
+        <!-- Стиль функциональных кнопок действий -->
+        <Style Selector="Button.actBtn">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+    </Window.Styles>
+
+    <!-- 
+      VIEWBOX: Автоматически масштабирует всё содержимое пропорционально размерам окна.
+      Просто потяните за угол окна — весь интерфейс плавно увеличится или уменьшится!
+    -->
+    <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid Width="1440" Height="860" RowDefinitions="Auto,*,Auto" Margin="6">
+
+            <!-- ========================================================================= -->
+            <!-- СТРОКА 0: ВЕРХНЯЯ ПАНЕЛЬ (ПОДКЛЮЧЕНИЕ, ФАЙЛЫ, СИСТЕМНЫЕ КНОПКИ И ВЕРСИЯ) -->
+            <!-- ========================================================================= -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*,Auto" Margin="0,0,0,4">
+
+                <!-- Блок подключения к контроллеру (аналог groupBox1 из Form1) -->
+                <Border Grid.Column="0" Classes="groupCard" Width="492">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Подключение к контроллеру (COM / TCP Wi-Fi)" Classes="groupTitle"/>
+                        <Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto" Margin="2">
+
+                            <!-- Переключатель режима: COM (USB Serial) или TCP Wi-Fi (мост ESP-32S) -->
+                            <RadioButton Grid.Row="0" Grid.Column="0" x:Name="rbSerial" Content="COM-порт"
+                                         IsCheckedChanged="rbSerial_CheckedChanged" Margin="0,0,16,6"/>
+                            <RadioButton Grid.Row="0" Grid.Column="1" x:Name="rbTcp" Content="Wi-Fi (TCP)"
+                                         IsChecked="True" IsCheckedChanged="rbTcp_CheckedChanged" Margin="0,0,16,6"/>
+
+                            <!-- Текстовый индикатор текущего статуса подключения -->
+                            <TextBlock Grid.Row="0" Grid.Column="2" x:Name="lblConnStatus" Text="Отключено"
+                                       Foreground="DimGray" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                            <!-- Элементы управления COM-портом (видны только при выборе режима COM) -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="6"
+                                        x:Name="pnlSerial" IsVisible="False">
+                                <local:EditableComboBox x:Name="comboBox1" Width="175" ToolTip.Tip="Выбор последовательного порта (COMx / /dev/ttyUSB*)"/>
+                                <Button x:Name="button2" Content="Обновить" Classes="actBtn" Click="button2_Click"
+                                        ToolTip.Tip="Пересканировать доступные порты в системе"/>
+                            </StackPanel>
+
+                            <!-- Элементы управления TCP Wi-Fi (видны только при выборе режима Wi-Fi) -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="6"
+                                        x:Name="pnlTcp" IsVisible="True">
+                                <TextBlock x:Name="lblTcpIp" Text="IP:" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                <TextBox x:Name="txtTcpIp" Text="192.168.4.1" Width="145" ToolTip.Tip="IP-адрес контроллера в сети Wi-Fi"/>
+                                <TextBlock x:Name="lblTcpPort" Text="Порт:" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                <TextBox x:Name="txtTcpPort" Text="8088" Width="60" ToolTip.Tip="TCP-порт моста (по умолчанию 8088)"/>
+                            </StackPanel>
+
+                            <!-- Главная кнопка подключения / отключения (button1) -->
+                            <Button Grid.Row="1" Grid.Column="2" x:Name="button1" Content="Подключить"
+                                    Classes="actBtn" Width="120" Height="32" HorizontalAlignment="Right"
+                                    Background="#E1E1E1" Click="button1_Click"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Блок работы с файлами G-кода (аналог groupBox7 из Form1) -->
+                <Border Grid.Column="1" Classes="groupCard" Width="340">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Файл 📁" Classes="groupTitle"/>
+                        <StackPanel Orientation="Horizontal" Spacing="12" Margin="4,4,4,4">
+                            <!-- Кнопка сохранения сгенерированного файла (button16) -->
+                            <Button x:Name="button16" Classes="actBtn" Width="145" Height="38" Click="button16_Click"
+                                    ToolTip.Tip="Сохранить текущую сгенерированную траекторию в файл .gcode">
+                                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                    <TextBlock Text="💾" FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Сохранить" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <!-- Кнопка открытия и разбора файла G-кода (button17) -->
+                            <Button x:Name="button17" Classes="actBtn" Width="145" Height="38" Click="button17_Click"
+                                    ToolTip.Tip="Открыть файл .gcode и считать сохраненные параметры">
+                                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                    <TextBlock Text="📂" FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Загрузить" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Верхний правый угол: Экранная клавиатура, О программе, Обновление, Версия -->
+                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" Margin="0,0,8,0">
+                    <!-- Кнопка вызова сенсорной цифровой клавиатуры Numpad -->
+                    <Button x:Name="ToggleNumpadButton" Classes="actBtn" Height="44" Padding="8,2" Click="ToggleNumpadButton_Click"
+                            ToolTip.Tip="Показать/скрыть плавающую сенсорную клавиатуру для ввода чисел">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <Image Source="avares://Gpellers/Assets/icons_keyboard.png" Width="26" Height="26"/>
+                            <TextBlock x:Name="txtNumpad" Text="Экранная&#x0a;Клавиатура" VerticalAlignment="Center" FontSize="11"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Диалоговые кнопки -->
+                    <Button x:Name="button9" Content="О программе" Classes="actBtn" Height="44" Click="button9_Click_2"/>
+                    <Button x:Name="button8" Content="Обновить" Classes="actBtn" Height="44" Click="button8_ClickAsync"/>
+
+                    <!-- Метка версии (Ver: 2.0.0) -->
+                    <TextBlock x:Name="label12" Text="Ver: 1.0.4" FontWeight="Bold" Foreground="#666666"
+                               VerticalAlignment="Center" Margin="6,0,0,0"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- ========================================================================= -->
+            <!-- СТРОКА 1: ОСНОВНАЯ ОБЛАСТЬ (3 КОЛОНКИ)                                    -->
+            <!-- 1. ПЛАН СКАНИРОВАНИЯ | 2. УПРАВЛЕНИЕ (ДЖОГ + ВОДА) | 3. МОНИТОР ТЕРМИНАЛА -->
+            <!-- ========================================================================= -->
+            <Grid Grid.Row="1" ColumnDefinitions="510,590,*">
+
+                <!-- ===================================================================== -->
+                <!-- КОЛОНКА 1: ПЛАН СКАНИРОВАНИЯ (ЗИГЗАГ) - аналог панели Zigzag в Form1 -->
+                <!-- ===================================================================== -->
+                <Border Grid.Column="0" Classes="groupCard" x:Name="Zigzag">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="План сканирования" Classes="groupTitle"/>
+
+                            <!-- Точка A (Начальные координаты сканирования) -->
+                            <Border BorderBrush="#D0D0D0" BorderThickness="1" CornerRadius="4" Padding="6" Background="#FAFAFA">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Точка A (Начало)" FontWeight="SemiBold" Foreground="#0055AA"/>
+                                    <Grid ColumnDefinitions="Auto,*,Auto,*,Auto">
+                                        <!-- Координата X начала (startPosX) -->
+                                        <TextBlock Grid.Column="0" Text="X:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="Bold"/>
+                                        <TextBox Grid.Column="1" x:Name="startPosX" Text="0.0"/>
+
+                                        <!-- Координата Y начала (startPosY) -->
+                                        <TextBlock Grid.Column="2" Text="Y:" VerticalAlignment="Center" Margin="8,0,4,0" FontWeight="Bold"/>
+                                        <TextBox Grid.Column="3" x:Name="startPosY" Text="0.0"/>
+
+                                        <!-- Кнопка считывания текущего положения станка в точку A (button6) -->
+                                        <Button Grid.Column="4" x:Name="button6" Content="Текущие" Classes="actBtn"
+                                                Margin="8,0,0,0" ToolTip.Tip="Записать текущие координаты станка в точку A"
+                                                Click="button6_Click"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Точка B (Конечные координаты сканирования) -->
+                            <Border BorderBrush="#D0D0D0" BorderThickness="1" CornerRadius="4" Padding="6" Background="#FAFAFA">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Точка B (Конец)" FontWeight="SemiBold" Foreground="#AA5500"/>
+                                    <Grid ColumnDefinitions="Auto,*,Auto,*,Auto">
+                                        <!-- Координата X конца (endPosX) -->
+                                        <TextBlock Grid.Column="0" Text="X:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="Bold"/>
+                                        <TextBox Grid.Column="1" x:Name="endPosX" Text="0.0"/>
+
+                                        <!-- Координата Y конца (endPosY) -->
+                                        <TextBlock Grid.Column="2" Text="Y:" VerticalAlignment="Center" Margin="8,0,4,0" FontWeight="Bold"/>
+                                        <TextBox Grid.Column="3" x:Name="endPosY" Text="0.0"/>
+
+                                        <!-- Кнопка считывания текущего положения станка в точку B (button7) -->
+                                        <Button Grid.Column="4" x:Name="button7" Content="Текущие" Classes="actBtn"
+                                                Margin="8,0,0,0" ToolTip.Tip="Записать текущие координаты станка в точку B"
+                                                Click="button7_Click"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Параметры: Время прокачки воды, Скорость и Шаг -->
+                            <Grid ColumnDefinitions="*,*,*">
+                                <!-- Время прокачки воды перед сканированием (comboBox6, start_w) -->
+                                <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+                                    <TextBlock Text="Время прокач." FontWeight="SemiBold" ToolTip.Tip="Время первичной подачи воды перед началом сканирования"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <local:EditableComboBox x:Name="comboBox6" Width="105"/>
+                                        <TextBlock Text="сек." VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Скорость сканирования (comboBox4) -->
+                                <StackPanel Grid.Column="1" Spacing="4" Margin="4,0,4,0">
+                                    <TextBlock Text="Скорость" FontWeight="SemiBold"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <local:EditableComboBox x:Name="comboBox4" Width="105"/>
+                                        <TextBlock Text="мм/с" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Шаг между проходами зигзага (comboBox2) -->
+                                <StackPanel Grid.Column="2" Spacing="4" Margin="4,0,0,0">
+                                    <TextBlock Text="Шаг" FontWeight="SemiBold"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <local:EditableComboBox x:Name="comboBox2" Width="105"/>
+                                        <TextBlock Text="мм" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Расчетное время сканирования -->
+                            <Border BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="4" Padding="6" Background="#F5F5F5">
+                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                    <TextBlock Text="Время сканирования:" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="label16" Text="0" FontWeight="Bold" Foreground="#008000"/>
+                                    <TextBlock Text="сек."/>
+                                </StackPanel>
+                            </Border>
+
+                            <Separator Height="1" Background="#DDDDDD" Margin="0,4"/>
+
+                            <!-- Кнопки управления выполнением программы сканирования -->
+                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,4">
+                                <!-- Кнопка генерации зигзага (genButton) -->
+                                <Button Grid.Row="0" Grid.Column="0" x:Name="genButton" Classes="actBtn" Height="44" Width="140" Margin="3"
+                                        Background="#D5E8D4" Click="genButton_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <Image Source="avares://Gpellers/Assets/genButton_Image.png" Width="22" Height="22"/>
+                                        <TextBlock Text="Генерировать" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Кнопка быстрого возврата в точку начала (button12) -->
+                                <Button Grid.Row="1" Grid.Column="0" x:Name="button12" Classes="actBtn" Height="44" Width="140" Margin="3" Click="button12_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <Image Source="avares://Gpellers/Assets/button12_Image.png" Width="22" Height="22"/>
+                                        <TextBlock Text="В начало" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Кнопка запуска потоковой отправки G-кода (button3) -->
+                                <Button Grid.Row="2" Grid.Column="0" x:Name="button3" Classes="actBtn" Height="46" Width="140" Margin="3"
+                                        FontWeight="Bold" Background="#DAE8FC" Click="button3_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <Image Source="avares://Gpellers/Assets/icons8-circled-play-button-35.png" Width="24" Height="24"/>
+                                        <TextBlock Text="Отправить" VerticalAlignment="Center" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Кнопка Пауза / Возобновить (button11) -->
+                                <Button Grid.Row="3" Grid.Column="0" x:Name="button11" Classes="actBtn" Height="46" Width="140" Margin="3"
+                                        Background="#FFF2CC" Click="button11_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <Image x:Name="imgButton11" Source="avares://Gpellers/Assets/button11_Image.png" Width="22" Height="22"/>
+                                        <TextBlock x:Name="txtButton11" Text="Пауза" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+
+                            <!-- Индикатор прогресса передачи кадров G-кода -->
+                            <StackPanel Spacing="8" Margin="0,8,0,0">
+                                <TextBlock x:Name="label10" Text="Прогресс: Ожидание" HorizontalAlignment="Center" FontWeight="SemiBold"/>
+                                <ProgressBar x:Name="progressBar1" Height="42" Minimum="0" Maximum="100" Value="0"
+                                             ShowProgressText="True"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- ===================================================================== -->
+                <!-- КОЛОНКА 2: РУЧНОЕ УПРАВЛЕНИЕ (ДЖОГ И ВОДА) - аналог панели Control   -->
+                <!-- ===================================================================== -->
+                <Border Grid.Column="1" Classes="groupCard" x:Name="Control">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Управление" Classes="groupTitle"/>
+
+                            <!-- Монитор текущих координат станка X, Y, Z и кнопка сброса -->
+                            <Border BorderBrush="#C0C0C0" BorderThickness="1" CornerRadius="4" Padding="8" Background="#F0F8FF">
+                                <Grid ColumnDefinitions="*,*,*,Auto">
+                                    <TextBlock Grid.Column="0" x:Name="label17" Text="X: 0.0" FontSize="16" FontWeight="Bold"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" x:Name="label18" Text="Y: 0.0" FontSize="16" FontWeight="Bold"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" x:Name="label19" Text="Z: 0.0" FontSize="16" FontWeight="Bold"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <!-- Кнопка программного обнуления координат (button14: Сброс) -->
+                                    <Button Grid.Column="3" x:Name="button14" Classes="actBtn" Width="85" Height="36"
+                                            Content="Сброс" Background="#FFF0F0" Foreground="#C00000" Click="button14_Click"
+                                            ToolTip.Tip="Обнулить текущие координаты станка (G10 L20 P1 X0 Y0 Z0)"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Ручная командная строка G-кода -->
+                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2">
+                                <TextBlock Text="G-код:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,8,0"/>
+                                <TextBox Grid.Column="1" x:Name="customBox" KeyDown="customBox_KeyDown"
+                                         Watermark="Например: G00 X10 Y10 или $$"/>
+                                <Button Grid.Column="2" x:Name="button4" Content="Отправить код" Classes="actBtn"
+                                        Margin="8,0,0,0" Height="32" Click="Button4_Click"/>
+                            </Grid>
+
+                            <!-- Блок кнопок ручного перемещения X/Y и Блок Подачи воды -->
+                            <Grid ColumnDefinitions="*,*" Margin="0,4">
+
+                                <!-- Джог плоскости X/Y (аналог groupBox2 в Form1) -->
+                                <Border Grid.Column="0" Classes="groupCard" Margin="0,0,4,0">
+                                    <StackPanel Spacing="4">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" Text="X Y" Classes="groupTitle" VerticalAlignment="Center"/>
+                                            <!-- Кнопка 'Дом' ($H\n) в правом верхнем углу блока X/Y (button13) перемещена -->
+                                            
+                                        </Grid>
+
+                                        <!-- Крестовина премещения XY -->
+                                        <Grid RowDefinitions="64,64,64" ColumnDefinitions="80,80,80"
+                                              HorizontalAlignment="Center" Margin="0,4">
+                                            <!-- Кнопка Y+ (Вверх) -->
+                                            <Button Grid.Column="2" Grid.Row="0" x:Name="button13" Content="Дом" Classes="actBtn"
+                                                    Width="75" Height="60" Background="#E3F2FD" Foreground="#1565C0"
+                                                    Click="button13_Click" ToolTip.Tip="Выполнить поиск дома ($H)"/>
+                                            <Button Grid.Row="0" Grid.Column="1" Width="76" Height="62" x:Name="buttonUpXY" Classes="jogBtn"
+                                                    Click="buttonUpXY_Click" ToolTip.Tip="Перемещение оси Y в плюс">
+                                                <Image Source="avares://Gpellers/Assets/buttonUpXY_BackgroundImage.png" Width="44" Height="44"/>
+                                            </Button>
+
+                                            <!-- Кнопка X- (Влево) -->
+                                            <Button Grid.Row="1" Grid.Column="0" Width="76" Height="62" x:Name="buttonLeftXY" Classes="jogBtn"
+                                                    Click="buttonLeftXY_Click" ToolTip.Tip="Перемещение оси X в минус">
+                                                <Image Source="avares://Gpellers/Assets/buttonLeftXY_BackgroundImage.png" Width="44" Height="44"/>
+                                            </Button>
+
+                                            <!-- Центральная кнопка домой в (0,0) (buttonHomeXY) -->
+                                            <Button Grid.Row="1" Grid.Column="1" Width="76" Height="62" x:Name="buttonHomeXY" Classes="jogBtn"
+                                                    Click="buttonHomeXY_Click" ToolTip.Tip="Перейти в координаты рабочей базы (0,0)">
+                                                <Image Source="avares://Gpellers/Assets/buttonHomeXY_BackgroundImage.png" Width="44" Height="44"/>
+                                            </Button>
+
+                                            <!-- Кнопка X+ (Вправо) -->
+                                            <Button Grid.Row="1" Grid.Column="2" Width="76" Height="62" x:Name="buttonRightXY" Classes="jogBtn"
+                                                    Click="buttonRightXY_Click" ToolTip.Tip="Перемещение оси X в плюс">
+                                                <Image Source="avares://Gpellers/Assets/buttonRightXY_BackgroundImage.png" Width="44" Height="44"/>
+                                            </Button>
+
+                                            <!-- Кнопка Y- (Вниз) -->
+                                            <Button Grid.Row="2" Grid.Column="1" Width="76" Height="62" x:Name="buttonDownXY" Classes="jogBtn"
+                                                    Click="buttonDownXY_Click" ToolTip.Tip="Перемещение оси Y в минус">
+                                                <Image Source="avares://Gpellers/Assets/buttonDownXY_BackgroundImage.png" Width="44" Height="44"/>
+                                            </Button>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Блок Подачи воды 💧 (аналог groupBox4 в Form1 - СПЕЦИФИКА GPELLERS) -->
+                                <Border Grid.Column="1" Classes="groupCard" Margin="4,0,0,0">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="Подача воды 💧" Classes="groupTitle"/>
+
+                                        <Grid ColumnDefinitions="Auto,*" Margin="0,4">
+                                            <!-- Кнопки управления насосом подачи/откачки воды (Z-ось) -->
+                                            <StackPanel Grid.Column="0" Spacing="10" Margin="0,0,10,0">
+                                                <!-- Подача воды (buttonUpZ, плюс) -->
+                                                <Button x:Name="buttonUpZ" Classes="jogBtn" Width="70" Height="70"
+                                                        Click="buttonUpZ_Click" ToolTip.Tip="Подать воду">
+                                                    <Image Source="avares://Gpellers/Assets/icons8-plus-75.png" Width="42" Height="42"/>
+                                                </Button>
+
+                                                <!-- Откачка / обратный ход воды (buttonDownZ, минус) -->
+                                                <Button x:Name="buttonDownZ" Classes="jogBtn" Width="70" Height="70"
+                                                        Click="buttonDownZ_Click" ToolTip.Tip="Откачать воду">
+                                                    <Image Source="avares://Gpellers/Assets/icons8-minus-75.png" Width="42" Height="42"/>
+                                                </Button>
+                                            </StackPanel>
+
+                                            <!-- Параметры скорости и объёма подачи воды -->
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="12">
+                                                <!-- Скорость подачи воды (comboBox7, speedWater) -->
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="Скорость" FontWeight="SemiBold" FontSize="11"/>
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <local:EditableComboBox x:Name="comboBox7" Width="95"/>
+                                                        <TextBlock Text="мл/с" VerticalAlignment="Center" FontSize="11"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+
+                                                <!-- Объём дозирования воды (comboBox5, stepHandZ) -->
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="Объём" FontWeight="SemiBold" FontSize="11"/>
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <local:EditableComboBox x:Name="comboBox5" Width="95"/>
+                                                        <TextBlock Text="мл" VerticalAlignment="Center" FontSize="11"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- Выбор шага и скорости ручного перемещения -->
+                            <Grid ColumnDefinitions="*,*">
+                                <!-- Переключатели шага премещения в мм (аналог groupBox5) -->
+                                <Border Grid.Column="0" Classes="groupCard" Margin="0,0,4,0">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="Шаг (мм)" Classes="groupTitle"/>
+                                        <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto">
+                                            <RadioButton Grid.Row="0" Grid.Column="0" x:Name="radioButton1" Content="0.1" Click="radioButton1_CheckedChanged"/>
+                                            <RadioButton Grid.Row="0" Grid.Column="1" x:Name="radioButton2" Content="1" Click="radioButton2_CheckedChanged"/>
+                                            <RadioButton Grid.Row="0" Grid.Column="2" x:Name="radioButton3" Content="5" Click="radioButton4_CheckedChanged"/>
+                                            <RadioButton Grid.Row="1" Grid.Column="0" x:Name="radioButton4" Content="10" IsChecked="True" Click="radioButton3_CheckedChanged"/>
+                                            <RadioButton Grid.Row="1" Grid.Column="1" x:Name="radioButton5" Content="50" Click="radioButton5_CheckedChanged"/>
+                                            <RadioButton Grid.Row="1" Grid.Column="2" x:Name="radioButton6" Content="100" Click="radioButton6_CheckedChanged"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Выбор скорости премещения в мм/с (аналог groupBox6) -->
+                                <Border Grid.Column="1" Classes="groupCard" Margin="4,0,0,0">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="Скорость ручного перемещения" Classes="groupTitle"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+                                            <local:EditableComboBox x:Name="comboBox3" Width="140"
+                                                      SelectionChanged="comboBox3_SelectedIndexChanged"/>
+                                            <TextBlock Text="мм/с" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- ===================================================================== -->
+                <!-- КОЛОНКА 3: ТЕРМИНАЛ И НАСТРОЙКИ UI (аналог groupBox3 в Form1)         -->
+                <!-- ===================================================================== -->
+                <Border Grid.Column="2" Classes="groupCard" x:Name="groupBox3">
+                    <Grid RowDefinitions="*,Auto,Auto">
+
+                        <!-- Окно лога консоли ответов ЧПУ (аналог RichTextBox box) -->
+                        <Border Grid.Row="0" BorderBrush="#C0C0C0" BorderThickness="1" CornerRadius="4" Background="White" Margin="0,0,0,6">
+                            <TextBox x:Name="box" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                                     FontFamily="Consolas, Monospace, Courier New" FontSize="11"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     BorderThickness="0" Background="Transparent"/>
+                        </Border>
+
+                        <!-- Кнопка очистки содержимого терминала (button5) -->
+                        <Button Grid.Row="1" x:Name="button5" Content="Очистить" Classes="actBtn"
+                                HorizontalAlignment="Stretch" Height="36" Click="button5_Click"/>
+
+                        <!-- Регулятор прозрачности терминала (дополнительное удобство) -->
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,6,0,0">
+                            <TextBlock Text="Прозрачность:" FontSize="11" VerticalAlignment="Center" Foreground="#777777"/>
+                            <Slider x:Name="sliderOpacity" Width="120" Minimum="0.5" Maximum="1.0" Value="1.0"
+                                    ValueChanged="SliderOpacity_ValueChanged"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- ========================================================================= -->
+            <!-- СТРОКА 2: ПОЛНОРАЗМЕРНАЯ КНОПКА АВАРИЙНОГО ОСТАНОВА (СТОП, button10)      -->
+            <!-- Точно как в оригинале: занимает всю ширину внизу экрана                  -->
+            <!-- ========================================================================= -->
+            <Button Grid.Row="2" x:Name="button10" Classes="actBtn" Height="50" Width="1435" Margin="4,4,4,2"
+                    Background="#D9534F" Foreground="White" Click="button10_Click_1"
+                    ToolTip.Tip="Аварийный останов: отправка байта 0x18 и прерывание выполнения">
+                <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                    <TextBlock x:Name="txtIcon10" Text="🛑" FontSize="20" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="txtButton10" Text="СТОП" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Viewbox>
+</Window>
