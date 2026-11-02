@@ -58,6 +58,38 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="CornerRadius" Value="4"/>
         </Style>
+
+        <!-- Стиль терминала: чисто белый фон, черный текст, без эффектов при наведении и фокусе -->
+        <Style Selector="TextBox.terminalBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="CaretBrush" Value="Black"/>
+            <Setter Property="SelectionBrush" Value="#0078D7"/>
+            <Setter Property="SelectionForegroundBrush" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style Selector="TextBox.terminalBox:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <Style Selector="TextBox.terminalBox:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <Style Selector="TextBox.terminalBox:pointerover:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <Style Selector="TextBox.terminalBox:pointerover">
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        <Style Selector="TextBox.terminalBox:focus">
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        <Style Selector="TextBox.terminalBox:disabled /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
     </Window.Styles>
 
     <!-- 
@@ -475,11 +507,10 @@
                         <TextBlock Grid.Row="0" Text="Терминал ЧПУ" Classes="groupTitle"/>
 
                         <!-- Окно лога консоли ответов ЧПУ (аналог RichTextBox box) -->
-                        <Border Grid.Row="1" BorderBrush="#333333" BorderThickness="1" CornerRadius="4" Background="#1E1E1E" Margin="0,0,0,6">
-                            <TextBox x:Name="box" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                        <Border Grid.Row="1" BorderBrush="#B0B0B0" BorderThickness="1" CornerRadius="4" Background="White" Margin="0,0,0,6">
+                            <TextBox x:Name="box" Classes="terminalBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
                                      FontFamily="Consolas, Menlo, Courier New, monospace" FontSize="11.5"
-                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                     BorderThickness="0" Background="#1E1E1E" Foreground="#00FF66" CaretBrush="#00FF66"/>
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"/>
                         </Border>
 
                         <!-- Кнопка очистки содержимого терминала (button5) -->
