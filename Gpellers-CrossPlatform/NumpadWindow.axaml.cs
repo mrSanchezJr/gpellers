@@ -36,6 +36,11 @@ public partial class NumpadWindow : Window
         }
     }
 
+    public void SetTargetName(string name)
+    {
+        SetTargetField(name);
+    }
+
     private void Number_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is Button btn && btn.Content != null)
