@@ -1350,7 +1350,12 @@ public partial class MainWindow : Window
     {
         if (groupBox3 != null)
         {
-            this.Opacity = e.NewValue;
+            this.Opacity = e.NewValue / 100.0;
+            var lbl = this.FindControl<TextBlock>("lblOpacity");
+            if (lbl != null)
+            {
+                lbl.Text = $"{(int)e.NewValue}%";
+            }
         }
     }
 
