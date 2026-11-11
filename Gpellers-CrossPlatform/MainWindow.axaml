@@ -18,6 +18,7 @@
         Width="1440" Height="860"
         MinWidth="64" MinHeight="40"
         WindowStartupLocation="CenterScreen"
+        Topmost="True"
         Icon="avares://Gpellers/Assets/icons8-jet-engine-100.ico"
         Background="#F0F0F0">
 
