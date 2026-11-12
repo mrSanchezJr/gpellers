@@ -187,8 +187,8 @@
                     <Button x:Name="button9" Content="О программе" Classes="actBtn" Height="44" Click="button9_Click_2"/>
                     <Button x:Name="button8" Content="Обновить" Classes="actBtn" Height="44" Click="button8_ClickAsync"/>
 
-                    <!-- Метка версии (Ver: 2.0.0) -->
-                    <TextBlock x:Name="label12" Text="Ver: 1.0.4" FontWeight="Bold" Foreground="#666666"
+                    <!-- Метка версии (Ver: 2.0.1) -->
+                    <TextBlock x:Name="label12" Text="Ver: 2.0.1" FontWeight="Bold" Foreground="#666666"
                                VerticalAlignment="Center" Margin="6,0,0,0"/>
                 </StackPanel>
             </Grid>

@@ -13,7 +13,7 @@
         <!-- Текст описания -->
         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Spacing="8">
             <TextBlock Text="ASIS-2AX-V (Gpellers)" FontSize="18" FontWeight="Bold" Foreground="#1A237E"/>
-            <TextBlock x:Name="lblVersion" Text="Версия: 1.0.4 (Cross-Platform)" FontSize="13" Foreground="#616161"/>
+            <TextBlock x:Name="lblVersion" Text="Версия: 2.0.1 (Cross-Platform)" FontSize="13" Foreground="#616161"/>
             <TextBlock Text="Разработано: ООО «Ультранк»&#x0a;по заказу ООО «СПЕЦКИБЕРПРИБОР»" FontSize="14" TextWrapping="Wrap"/>
         </StackPanel>
 

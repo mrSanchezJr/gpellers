@@ -27,7 +27,7 @@ public static class AppVersion
             {
                 return new Version(asmVer.Major, asmVer.Minor, Math.Max(0, asmVer.Build));
             }
-            return new Version(1, 0, 4);
+            return new Version(2, 0, 1);
         }
     }
 
