@@ -385,18 +385,18 @@
                                         <!-- Крестовина премещения XY -->
                                         <Grid RowDefinitions="64,64,64" ColumnDefinitions="80,80,80"
                                               HorizontalAlignment="Center" Margin="0,4">
-                                            <!-- Кнопка Y+ (Вверх) -->
+                                            <!-- Кнопка X+ (Вверх) -->
                                             <Button Grid.Column="2" Grid.Row="0" x:Name="button13" Content="Дом" Classes="actBtn"
                                                     Width="75" Height="60" Background="#E3F2FD" Foreground="#1565C0"
                                                     Click="button13_Click" ToolTip.Tip="Выполнить поиск дома ($H)"/>
                                             <Button Grid.Row="0" Grid.Column="1" Width="76" Height="62" x:Name="buttonUpXY" Classes="jogBtn"
-                                                    Click="buttonUpXY_Click" ToolTip.Tip="Перемещение оси Y в плюс">
+                                                    Click="buttonUpXY_Click" ToolTip.Tip="Перемещение оси X в плюс">
                                                 <Image Source="avares://Gpellers/Assets/buttonUpXY_BackgroundImage.png" Width="44" Height="44"/>
                                             </Button>
 
-                                            <!-- Кнопка X- (Влево) -->
+                                            <!-- Кнопка Y- (Влево) -->
                                             <Button Grid.Row="1" Grid.Column="0" Width="76" Height="62" x:Name="buttonLeftXY" Classes="jogBtn"
-                                                    Click="buttonLeftXY_Click" ToolTip.Tip="Перемещение оси X в минус">
+                                                    Click="buttonLeftXY_Click" ToolTip.Tip="Перемещение оси Y в минус">
                                                 <Image Source="avares://Gpellers/Assets/buttonLeftXY_BackgroundImage.png" Width="44" Height="44"/>
                                             </Button>
 
@@ -406,15 +406,15 @@
                                                 <Image Source="avares://Gpellers/Assets/buttonHomeXY_BackgroundImage.png" Width="44" Height="44"/>
                                             </Button>
 
-                                            <!-- Кнопка X+ (Вправо) -->
+                                            <!-- Кнопка Y+ (Вправо) -->
                                             <Button Grid.Row="1" Grid.Column="2" Width="76" Height="62" x:Name="buttonRightXY" Classes="jogBtn"
-                                                    Click="buttonRightXY_Click" ToolTip.Tip="Перемещение оси X в плюс">
+                                                    Click="buttonRightXY_Click" ToolTip.Tip="Перемещение оси Y в плюс">
                                                 <Image Source="avares://Gpellers/Assets/buttonRightXY_BackgroundImage.png" Width="44" Height="44"/>
                                             </Button>
 
-                                            <!-- Кнопка Y- (Вниз) -->
+                                            <!-- Кнопка X- (Вниз) -->
                                             <Button Grid.Row="2" Grid.Column="1" Width="76" Height="62" x:Name="buttonDownXY" Classes="jogBtn"
-                                                    Click="buttonDownXY_Click" ToolTip.Tip="Перемещение оси Y в минус">
+                                                    Click="buttonDownXY_Click" ToolTip.Tip="Перемещение оси X в минус">
                                                 <Image Source="avares://Gpellers/Assets/buttonDownXY_BackgroundImage.png" Width="44" Height="44"/>
                                             </Button>
                                         </Grid>

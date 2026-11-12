@@ -533,22 +533,22 @@ public partial class MainWindow : Window
     // =========================================================================
     private void buttonUpXY_Click(object? sender, RoutedEventArgs e)
     {
-        WriteIt($"G01 Y{stepHand} F{speedHand}", "G91");
+        WriteIt($"G01 X{stepHand} F{speedHand}", "G91");
     }
 
     private void buttonDownXY_Click(object? sender, RoutedEventArgs e)
     {
-        WriteIt($"G01 Y-{stepHand} F{speedHand}", "G91");
+        WriteIt($"G01 X-{stepHand} F{speedHand}", "G91");
     }
 
     private void buttonLeftXY_Click(object? sender, RoutedEventArgs e)
     {
-        WriteIt($"G01 X-{stepHand} F{speedHand}", "G91");
+        WriteIt($"G01 Y-{stepHand} F{speedHand}", "G91");
     }
 
     private void buttonRightXY_Click(object? sender, RoutedEventArgs e)
     {
-        WriteIt($"G01 X{stepHand} F{speedHand}", "G91");
+        WriteIt($"G01 Y{stepHand} F{speedHand}", "G91");
     }
 
     private void buttonHomeXY_Click(object? sender, RoutedEventArgs e)
