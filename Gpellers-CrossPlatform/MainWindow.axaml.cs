@@ -319,11 +319,24 @@ public partial class MainWindow : Window
             };
 
             port.Open();
+
+            // Небольшая задержка для стабилизации COM-порта перед отправкой первой команды
+            if (!isTcp)
+            {
+                System.Threading.Thread.Sleep(50);
+            }
+
+            // Отправка команды конфигурации режима связи контроллера MSC-3US:
+            // $452=0 при подключении по COM-порту, $452=1 при подключении по TCP
+            string modeCmd = isTcp ? "$452=1" : "$452=0";
+            port.WriteLine(modeCmd);
+
             isConnected = true;
             button1.Content = "Отключить";
             lblConnStatus.Text = "Подключено";
             lblConnStatus.Foreground = Brushes.ForestGreen;
             AppendLog("[Успех] Соединение с контроллером установлено!");
+            AppendLog($"[Конфигурация] Отправлена команда: {modeCmd}");
         }
         catch (Exception ex)
         {
